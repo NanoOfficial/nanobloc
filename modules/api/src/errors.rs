@@ -38,6 +38,12 @@ pub struct ErrorBody {
 
     #[serde(default, skip_serializing_if = "String::is_empty")]
     pub detail: String,
+
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub source: String,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error_code: Option<u8>,
 }
 
 impl fmt::Display for Error {
@@ -66,6 +72,58 @@ impl Error {
     pub fn not_found() -> Self {
         Error::new(HttpStatusCode::NOT_FOUND)
     }
+
+    pub fn internal(cause: impl fmt::Display) -> Self {
+        Error::new(HttpStatusCode::INTERNAL_SERVER_ERROR).detail(cause.to_string())
+    }
+
+    pub fn docs_uri(mut self, docs_uri: impl Into<String>) -> Self {
+        self.body.docs_uri = docs_uri.into();
+        self
+    }
+
+    pub fn title(mut self, title: impl Into<String>) -> Self {
+        self.body.title = title.into();
+        self
+    }
+
+    pub fn detail(mut self, detail: impl Into<String>) -> Self {
+        self.body.detail = detail.into();
+        self
+    }
+
+    #[doc(hidden)]
+    pub fn source(mut self, source: impl Into<String>) -> Self {
+        self.body.source = source.into();
+        self
+    }
+
+    pub fn error_code(mut self, error_code: u8) -> Self {
+        self.body.error_code = Some(error_code);
+        self
+    }
+
+    pub(crate) fn header(mut self, key: HeaderName, value: &str) -> Self {
+        self.headers.insert(key, value.parse().unwrap());
+        self
+    }
+
+    pub fn parse(
+        http_code: HttpStatusCode,
+        body: &str,
+    ) -> std::result::Result<Self, serde_json::Error> {
+        let body = if !body.is_empty() {
+            serde_json::from_str(body)?
+        } else {
+            ErrorBody::default()
+        };
+
+        Ok(Self {
+            http_code,
+            body,
+            headers: HeaderMap::new(),
+        })
+    }
 }
 
 #[derive(Debug)]
@@ -80,5 +138,25 @@ impl MovedPermanentlyError {
             location,
             query_part: None,
         }
+    }
+
+    pub fn with_query<Q: Serialize>(self, query: Q) -> Self {
+        let serialized_query =
+            serde_urlencoded::to_string(query).expect("unable to serialize the query.");
+        Self {
+            query_part: Some(serialized_query),
+            ..self
+        }
+    }
+}
+
+impl From<MovedPermanentlyError> for Error {
+    fn from(e: MovedPermanentlyError) -> Self {
+        let full_location = match e.query_part {
+            Some(query) => format!("{}?{}", e.location, query),
+            None => e.location,
+        };
+
+        Error::new(HttpStatusCode::MOVED_PERMANENTLY).header(header::LOCATION, &full_location)
     }
 }
