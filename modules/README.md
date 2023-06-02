@@ -1,0 +1,1 @@
+## Required modules for the whole application.
