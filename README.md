@@ -1,6 +1,8 @@
 # nanobloc
 nanobloc is a framework for creating private &amp; approval blockchain applications 
 
+[![forthebadge](https://forthebadge.com/images/badges/made-with-rust.svg)](https://forthebadge.com)
+
 # About:
 - nanobloc is a full-packed framework which helps developers building private and authorized blockchain applications
 
