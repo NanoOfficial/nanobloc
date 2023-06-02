@@ -1,5 +1,6 @@
-//@filename: errors.rs
-//@license: Apache-2.0 License
+// @filename: errors.rs
+// @author: Krisna Pranav
+// @license: Apache-2.0 License
 
 pub use actix_web::http::{
     header::{self, HeaderMap, HeaderName},
