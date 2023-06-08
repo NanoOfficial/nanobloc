@@ -1,5 +1,7 @@
 [workspace]
 members = [
     "modules/api",
-    "modules/construct"
+    "modules/construct",
+    "modules/proto",
+    "modules/crypto",
 ]
