@@ -1,18 +1,13 @@
-// @filename: errors.rs
-// @author: Krisna Pranav
-// @license: Apache-2.0 License
-
 use std::{future::Future, marker::PhantomData};
 use time::OffsetDateTime;
 
-use crate::{errors, EndpointMutability};
+use crate::{error, EndpointMutability};
 
-pub type Result<I> = std::result::Result<I, errors::Error>;
+pub type Result<I> = std::result::Result<I, error::Error>;
 
 #[derive(Debug)]
 pub struct With<Q, I, R, F> {
     pub handler: F,
-
     pub actuality: Actuality,
     _query_type: PhantomData<Q>,
     _item_type: PhantomData<I>,
@@ -22,7 +17,6 @@ pub struct With<Q, I, R, F> {
 #[derive(Debug, Clone)]
 pub enum Actuality {
     Actual,
-
     Deprecated {
         discontinued_on: Option<OffsetDateTime>,
         description: Option<String>,

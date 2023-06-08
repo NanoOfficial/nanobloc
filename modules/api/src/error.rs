@@ -1,7 +1,3 @@
-// @filename: errors.rs
-// @author: Krisna Pranav
-// @license: Apache-2.0 License
-
 pub use actix_web::http::{
     header::{self, HeaderMap, HeaderName},
     StatusCode as HttpStatusCode,
@@ -33,16 +29,12 @@ impl Default for Error {
 pub struct ErrorBody {
     #[serde(rename = "type", default, skip_serializing_if = "String::is_empty")]
     pub docs_uri: String,
-
     #[serde(default, skip_serializing_if = "String::is_empty")]
     pub title: String,
-
     #[serde(default, skip_serializing_if = "String::is_empty")]
     pub detail: String,
-
     #[serde(default, skip_serializing_if = "String::is_empty")]
     pub source: String,
-
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error_code: Option<u8>,
 }
@@ -140,10 +132,9 @@ impl MovedPermanentlyError {
             query_part: None,
         }
     }
-
     pub fn with_query<Q: Serialize>(self, query: Q) -> Self {
         let serialized_query =
-            serde_urlencoded::to_string(query).expect("unable to serialize the query.");
+            serde_urlencoded::to_string(query).expect("Unable to serialize query.");
         Self {
             query_part: Some(serialized_query),
             ..self
