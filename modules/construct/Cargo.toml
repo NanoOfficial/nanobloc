@@ -1,0 +1,10 @@
+[package]
+name = "construct"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+protobuf-codegen = "3"
+walkdir = "2"
+quote = "1"
+proc-macro2 = "1"

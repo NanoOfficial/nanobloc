@@ -1,6 +1,10 @@
 # build output
 target/
 
+# ide cache
+.idea/
+.vscode/
+
 # system cache
 .DS_Store
 
